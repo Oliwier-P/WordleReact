@@ -1,0 +1,85 @@
+body {
+    margin: 0 auto;
+}
+
+.wordle-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    
+
+    .wordle-header {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100vw;
+        height: 50px;
+        justify-content: center;
+        align-content: center;
+        box-sizing: border-box;
+        border-bottom: 3px solid black;
+    
+        h1: {
+            margin: 0;
+            padding: 0;
+        }
+    }
+
+    .wordle-game-words {
+        width: 100%;
+        max-width: 300px;
+        min-height: 390px;
+        border: black 3px solid;
+    }
+
+    .wordle-keyboard {
+        width: 500px;
+        max-width: 100%;
+        height: 150px;  
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        align-content: space-around;
+
+        .wordle-keyboard-row {
+            width: 100%;
+            height: 50px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+
+            .wordle-button {
+                width: 9%;
+                height: 45px;
+                background-color: #D3D7DA;
+            }
+            
+            .wordle-button-special {
+                width: 15%;
+                height: 45px;
+                background-color: #D3D7DA;
+            }
+        }
+
+        .wordle-keyboard-second-row {
+            width: 100%;
+            height: 50px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+
+            .wordle-button {
+                width: 10%;
+                height: 45px;
+                background-color: #D3D7DA;
+            }
+        }
+
+        button {
+            border: none;
+        }
+    }
+}
+
+
