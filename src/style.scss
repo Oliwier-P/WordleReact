@@ -8,6 +8,7 @@ body {
     align-items: center;
     height: 100vh;
     width: 100vw;
+    overflow-x: auto;
     
 
     .wordle-header {
@@ -30,7 +31,26 @@ body {
         width: 100%;
         max-width: 300px;
         min-height: 390px;
-        border: black 3px solid;
+        margin-top: auto;
+        margin-bottom: auto;
+        display: flex;
+        flex-direction: column;
+
+        .wordle-tile-row {
+            width: 100%;
+            height: 15%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin: auto;
+        }
+
+        .wordle-tile {
+            width: 19%;
+            height: 100%;
+            box-sizing: border-box;
+            border: 3px solid #D3D7DA;
+        }
     }
 
     .wordle-keyboard {
@@ -41,6 +61,7 @@ body {
         flex-wrap: wrap;
         justify-content: space-around;
         align-content: space-around;
+        margin-bottom: auto;
 
         .wordle-keyboard-row {
             width: 100%;
@@ -49,30 +70,38 @@ body {
             justify-content: space-around;
             align-items: center;
 
+            &-first {
+                @extend .wordle-keyboard-row;
+                .wordle-button {
+                    width: 9%;
+                }
+            }
+            &-second {
+                @extend .wordle-keyboard-row;
+                .wordle-button {
+                    width: 10%;
+                }
+            }
+            &-third {
+                @extend .wordle-keyboard-row;
+                .wordle-button {
+                    width: 8%;
+                }
+            }
+
             .wordle-button {
-                width: 9%;
+                min-width: min-content;
                 height: 45px;
                 background-color: #D3D7DA;
+                font-size: 1.25em;
             }
             
             .wordle-button-special {
-                width: 15%;
+                width: 14%;
+                min-width: min-content;
                 height: 45px;
                 background-color: #D3D7DA;
-            }
-        }
-
-        .wordle-keyboard-second-row {
-            width: 100%;
-            height: 50px;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-
-            .wordle-button {
-                width: 10%;
-                height: 45px;
-                background-color: #D3D7DA;
+                font-size: 1em;
             }
         }
 
