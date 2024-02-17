@@ -1,9 +1,10 @@
+export function LetterTile({ id, word }) {
+    
+    const letter = word.substring(id, id+1);
 
-
-export function LetterTile({ letter }) {
     return (
       <>
-          <div className={`wordle-tile`}></div>
+          <div className={`wordle-tile`}>{letter}</div>
       </>
     )
   }

@@ -1,5 +1,3 @@
-
-
 export function LetterButton({ letter }) {
   return (
     <>

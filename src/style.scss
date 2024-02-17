@@ -2,6 +2,16 @@ body {
     margin: 0 auto;
 }
 
+$light-primary-color: #D3D7DA;
+$light-secondary-color: #F6F6F6;
+$light-accent-color: #5E5E5E;
+
+$guessed-color: #68AC61;
+$almost-guessed-color: #CBB550;
+$contrast-guessed-color: #3F94E9;
+$contrast-almost-guessed-color: #F17E2D;
+
+
 .wordle-container {
     display: flex;
     flex-direction: column;
@@ -50,6 +60,12 @@ body {
             height: 100%;
             box-sizing: border-box;
             border: 3px solid #D3D7DA;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            text-transform: uppercase;
         }
     }
 

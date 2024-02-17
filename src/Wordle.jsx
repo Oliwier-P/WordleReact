@@ -1,9 +1,7 @@
+import { useEffect, useRef, useState } from 'react';
 import { LetterButton } from './components/LetterButton.jsx'
 import { LetterTile } from './components/LetterTile.jsx'
 import "./style.scss";
-
-const words = ["", ""];
-const currentWord = 1;
 
 const WordsColumns = [1, 2, 3, 4, 5]
 const WordsRows = [1, 2, 3, 4, 5, 6]
@@ -13,6 +11,61 @@ const SecondRowLetters = ["A", "S", "D", "F", "G", "H", "J", "K", "L"]
 const ThirdRowLetters = ["ENTER", "Z", "X", "C", "V", "B", "N", "M", "BACKSPACE"]
 
 export function Wordle() {
+  const [word, setWord] = useState("kiosk");  // This is the word that the user will have to guess
+  const [words, setWords] = useState(["", "", "", "", "", ""]); // This is the array of words that the user is typing
+  const currentIndexWord = useRef(0);
+
+  const handleKeyPress = async (event) => {
+    if(words[currentIndexWord.current].length < 5){
+
+      words[currentIndexWord.current] += event.key;
+
+      setWords([...words]);
+    }
+  }
+
+  const handleKeyDown = (event) => {
+    const { key, keyCode } = event;
+    if (/^[a-zA-Z]$/.test(key)) {
+      handleKeyPress(event);
+    }
+    if(keyCode === 13){
+      handleEnter();
+    } 
+    if(keyCode === 8){
+      handleBackspace();
+    }
+  };
+
+  const handleEnter = async () => {
+    if(words[currentIndexWord.current].length >= 5){
+      // change to checking by every single letter
+      if(words[currentIndexWord.current].toUpperCase() === word.toUpperCase()){
+        console.log("You win");
+      }
+      if(currentIndexWord.current === 5){
+        console.log("You lose");
+      }
+      currentIndexWord.current++;
+    }
+    console.log(currentIndexWord.current);
+  }
+
+  const handleBackspace = async () => {
+    if(words[currentIndexWord.current].length > 0){
+      words[currentIndexWord.current] = words[currentIndexWord.current].slice(0, -1);
+      setWords([...words]);
+    }
+  
+  }
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [])
 
   return (
     <>
@@ -24,7 +77,7 @@ export function Wordle() {
         <section id="game" className="wordle-game-words">
           {WordsRows.map((row) => (
             <div key={row} className={`wordle-tile-row`}>
-              { WordsColumns.map((index, col) => (<LetterTile key={index} letter={col}/>))}
+              { WordsColumns.map((index, col) => (<LetterTile key={index} id={col} word={words[row-1]}/>))}
             </div>
           ))}
         </section>
