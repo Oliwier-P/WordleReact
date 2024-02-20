@@ -1,26 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
-import { LetterButton } from './components/LetterButton.jsx'
-import { LetterTile } from './components/LetterTile.jsx'
+import { Board } from './components/Board.jsx'
+import { Keyboard } from './components/Keyboard.jsx'
 import "./style.scss";
-
-const WordsColumns = [1, 2, 3, 4, 5]
-const WordsRows = [1, 2, 3, 4, 5, 6]
-
-const FirstRowLetters = ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"]
-const SecondRowLetters = ["A", "S", "D", "F", "G", "H", "J", "K", "L"]
-const ThirdRowLetters = ["ENTER", "Z", "X", "C", "V", "B", "N", "M", "BACKSPACE"]
 
 export function Wordle() {
   const [word, setWord] = useState("kiosk");  // This is the word that the user will have to guess
-  const [words, setWords] = useState(["", "", "", "", "", ""]); // This is the array of words that the user is typing
-  const currentIndexWord = useRef(0);
+  const [wordsAttempts, setwordsAttempts] = useState(["", "", "", "", "", ""]); // This is the array of wordsAttempts that the user is typing
+  const currentIndexWordAttempt = useRef(0);
 
   const handleKeyPress = async (event) => {
-    if(words[currentIndexWord.current].length < 5){
+    if(wordsAttempts[currentIndexWordAttempt.current].length < 5){
 
-      words[currentIndexWord.current] += event.key;
+      wordsAttempts[currentIndexWordAttempt.current] += event.key;
 
-      setWords([...words]);
+      setwordsAttempts([...wordsAttempts]);
     }
   }
 
@@ -38,25 +31,64 @@ export function Wordle() {
   };
 
   const handleEnter = async () => {
-    if(words[currentIndexWord.current].length >= 5){
-      // change to checking by every single letter
-      if(words[currentIndexWord.current].toUpperCase() === word.toUpperCase()){
+    if(wordsAttempts[currentIndexWordAttempt.current].length >= 5){
+      handleLetterAnimation();
+      if(wordsAttempts[currentIndexWordAttempt.current].toUpperCase() === word.toUpperCase()){
         console.log("You win");
+        return;
       }
-      if(currentIndexWord.current === 5){
+      if(currentIndexWordAttempt.current === 5){
         console.log("You lose");
+        return;
       }
-      currentIndexWord.current++;
+      currentIndexWordAttempt.current++;
     }
-    console.log(currentIndexWord.current);
   }
 
   const handleBackspace = async () => {
-    if(words[currentIndexWord.current].length > 0){
-      words[currentIndexWord.current] = words[currentIndexWord.current].slice(0, -1);
-      setWords([...words]);
+    if(wordsAttempts[currentIndexWordAttempt.current].length > 0){
+      wordsAttempts[currentIndexWordAttempt.current] = wordsAttempts[currentIndexWordAttempt.current].slice(0, -1);
+      setwordsAttempts([...wordsAttempts]);
     }
-  
+  }
+
+  const handleTileLayout = (id, color) => {
+    const wordTiles = document.querySelectorAll('.wordle-tile-row')[currentIndexWordAttempt.current].children; // The tiles of the word that player wrote - wordTile[0] is the first letter, ...
+
+    setTimeout(() => {
+      wordTiles[id].classList.add('wordle-tile-flip');
+    }, 200*id);
+
+    setTimeout(() => {
+      wordTiles[id].classList.remove('wordle-tile-flip');
+      wordTiles[id].style.backgroundColor = color;
+      wordTiles[id].style.borderColor = color;
+      wordTiles[id].style.color = 'white';
+    }, (200*id)+400);
+  }
+
+  const handleLetterAnimation = async () => {
+    let tempWord = word;
+    const wordAttempt = wordsAttempts[currentIndexWordAttempt.current];  // The word that player wrote
+    const arrayCorrectGuessedLetters = [];
+    
+    for (let i = 0; i < word.length; i++) {
+      if (wordAttempt[i].toUpperCase() === word[i].toUpperCase()) {
+        tempWord = tempWord.replace(wordAttempt[i], '');
+        arrayCorrectGuessedLetters.push(i);
+      }
+    }
+
+    for (let i = 0; i < word.length; i++) {
+      if(arrayCorrectGuessedLetters.includes(i)){
+        handleTileLayout(i, '#68AC61');
+      } else if(tempWord.toUpperCase().includes(wordAttempt[i].toUpperCase())){ 
+        tempWord = tempWord.replace(wordAttempt[i], '');
+        handleTileLayout(i, '#CBB550')
+      } else {
+        handleTileLayout(i, '#5E5E5E');
+      }
+    }
   }
 
   useEffect(() => {
@@ -71,33 +103,15 @@ export function Wordle() {
     <>
       <div className="wordle-container">
         <section id="header" className="wordle-header">
-          <h1>Wordle</h1> 
+            <h1>Wordle</h1>
         </section>
 
-        <section id="game" className="wordle-game-words">
-          {WordsRows.map((row) => (
-            <div key={row} className={`wordle-tile-row`}>
-              { WordsColumns.map((index, col) => (<LetterTile key={index} id={col} word={words[row-1]}/>))}
-            </div>
-          ))}
+        <section id="game" className="wordle-game-board">
+          <Board wordsAttempts={wordsAttempts}/>
         </section>
 
         <section id="keyboard" className="wordle-keyboard">
-          <div className="wordle-keyboard-row-first">
-            {FirstRowLetters.map((letter) => (
-              <LetterButton key={letter} letter={letter}/>
-            ))}
-          </div>
-          <div className="wordle-keyboard-row-second">
-            {SecondRowLetters.map((letter) => (
-              <LetterButton key={letter} letter={letter} />
-            ))}
-          </div>
-          <div className="wordle-keyboard-row-third">
-            {ThirdRowLetters.map((letter) => (
-              <LetterButton key={letter} letter={letter} />
-            ))}
-          </div>
+          <Keyboard />
         </section>
       </div>
     </>

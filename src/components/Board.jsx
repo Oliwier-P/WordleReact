@@ -1,0 +1,19 @@
+import { LetterTile } from './LetterTile'
+
+const WordsColumns = [1, 2, 3, 4, 5]
+const WordsRows = [1, 2, 3, 4, 5, 6]
+
+export function Board({ wordsAttempts }) {
+
+  return (
+    <>
+        {WordsRows.map((row) => (
+            <div key={row} className={`wordle-tile-row`}>
+                { WordsColumns.map((index, col) => (
+                  <LetterTile key={`${index}-${col}`} id={col} wordsAttempts={wordsAttempts[row-1]}/>
+                ))}
+            </div>
+            ))}
+    </>
+  )
+}
