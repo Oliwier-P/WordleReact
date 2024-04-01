@@ -1,6 +1,5 @@
-export function LetterTile({ id, wordsAttempts }) {
-    
-    const letter = wordsAttempts.substring(id, id+1);
+export function LetterTile({ col, word }) {
+    const letter = word.substring(col, col + 1);
 
     return (
       <>

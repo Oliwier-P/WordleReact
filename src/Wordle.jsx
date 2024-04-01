@@ -1,117 +1,217 @@
 import { useEffect, useRef, useState } from 'react';
+
+import { RandomWord } from './RandomWord.js';
+import wordsArray from './words.json';
+
 import { Board } from './components/Board.jsx'
 import { Keyboard } from './components/Keyboard.jsx'
+import { LostGameDialog } from './components/LostGameDialog.jsx'
+import { WonGameDialog } from './components/WonGameDialog.jsx';
+
 import "./style.scss";
 
+const word = RandomWord();
+
 export function Wordle() {
-  const [word, setWord] = useState("kiosk");  // This is the word that the user will have to guess
-  const [wordsAttempts, setwordsAttempts] = useState(["", "", "", "", "", ""]); // This is the array of wordsAttempts that the user is typing
-  const currentIndexWordAttempt = useRef(0);
+  const [wordIndex, setWordIndex] = useState(0);
+  const [correctWord, setcorrectWord] = useState("");
+  const [words, setWords] = useState(["", "", "", "", "", ""]);
+  const [gameStatus, setGameStatus] = useState({
+    gameOver: false,
+    gameWon: false,
+  });
 
-  const handleKeyPress = async (event) => {
-    if(wordsAttempts[currentIndexWordAttempt.current].length < 5){
+  const handleLetterAnimation = (wordColorsArray) => {
+    const wordTiles = document.querySelectorAll(".wordle-tile-row")[wordIndex].children;
 
-      wordsAttempts[currentIndexWordAttempt.current] += event.key;
+    wordColorsArray.map((color, index) => {
+      wordTiles[index].style.background = color;
+      wordTiles[index].style.border = color;
+      wordTiles[index].style.color = "white";
+    });
 
-      setwordsAttempts([...wordsAttempts]);
+  };
+
+  const handleKeyboardAnimation = (letter, status) => {
+    const button = document.getElementById(`key-${letter}`);
+    const computedStyles = window.getComputedStyle(button);
+
+    // computedStyle returns rgb(104, 172, 97) instead of #68AC61 (because HEX was empty)
+
+    if(status === "correct" || computedStyles === "rgb(104, 172, 97)"){
+      button.style.background = "#68AC61";
+      button.style.color = "white";
+    } else if(status === "missed" && button.style.background !== "rgb(104, 172, 97)"){
+      button.style.background = "#CBB550";
+      button.style.color = "white";
+    } else if(status === "incorrect" && button.style.background !== "rgb(104, 172, 97)" && button.style.background !== "rgb(203, 181, 80)"){
+      button.style.background = "#5E5E5E";
+      button.style.color = "white";
     }
-  }
+
+  };
+
+  const handleCheckLetters = () => {
+    let tempCorrectWord = correctWord;
+    let tempWord = words[wordIndex];
+    const wordColorsArray = [];
+
+    words[wordIndex].split("").forEach((letter, index) => {
+      if (letter === correctWord[index]) {
+        tempCorrectWord = tempCorrectWord.replace(letter, "");
+        tempWord = tempWord.replace(letter, "");
+        
+        wordColorsArray.push("#68AC61");
+
+        handleKeyboardAnimation(letter, "correct");
+      } else {
+        wordColorsArray.push("");
+      }
+    });
+
+    tempWord.split("").forEach((letter) => {
+      if (tempCorrectWord.includes(letter)) {
+        tempCorrectWord = tempCorrectWord.replace(letter, "");
+        const index = wordColorsArray.findIndex((color) => color === "");
+        wordColorsArray[index] = "#CBB550";
+        handleKeyboardAnimation(letter, "missed");
+      } else {
+        const index = wordColorsArray.findIndex((color) => color === "");
+        wordColorsArray[index] = "#5E5E5E";
+        handleKeyboardAnimation(letter, "incorrect");
+      }
+    });
+    
+    handleLetterAnimation(wordColorsArray);
+
+  };
+
+  const handleLetter = (letter) => {
+    if(words[wordIndex].length < 5){
+      setWords((words) => {
+        const newWords = [...words];
+        newWords[wordIndex] += letter.toLowerCase();
+        return newWords;
+      });
+    }
+  };
+
+  const handleEnter = () => {
+    if (words[wordIndex].length < 5) {
+      alert("Word must be 5 characters long");
+    } else {
+      handleCheckWord();
+    }
+  };
+
+  const handleBackspace = () => {
+    if (words[wordIndex].length > 0) {
+      setWords((words) => {
+        const newWords = [...words];
+        newWords[wordIndex] = newWords[wordIndex].slice(0, -1);
+        return newWords;
+      });
+    }
+  };
 
   const handleKeyDown = (event) => {
-    const { key, keyCode } = event;
+    const { key } = event;
+
     if (/^[a-zA-Z]$/.test(key)) {
-      handleKeyPress(event);
+      handleLetter(key);
     }
-    if(keyCode === 13){
+    if(key === "Enter"){
       handleEnter();
     } 
-    if(keyCode === 8){
+    if(key === "Backspace"){
       handleBackspace();
     }
   };
 
-  const handleEnter = async () => {
-    if(wordsAttempts[currentIndexWordAttempt.current].length >= 5){
-      handleLetterAnimation();
-      if(wordsAttempts[currentIndexWordAttempt.current].toUpperCase() === word.toUpperCase()){
-        console.log("You win");
-        return;
-      }
-      if(currentIndexWordAttempt.current === 5){
-        console.log("You lose");
-        return;
-      }
-      currentIndexWordAttempt.current++;
+  const handleCheckWord = () => {
+    if(wordIndex >= 5){
+      handleCheckLetters();
+      setTimeout(() => {
+        setGameStatus({
+          gameOver: true,
+          gameWon: false,
+        });
+      }, 1000);
+    } else if (words[wordIndex].toLocaleLowerCase() === correctWord.toLowerCase()) {
+      handleLetterAnimation(["#68AC61", "#68AC61", "#68AC61", "#68AC61", "#68AC61"]);
+      setTimeout(() => {
+        setGameStatus({
+          gameOver: true,
+          gameWon: true,
+        });
+      }, 1000);
+    } else if (!wordsArray.includes(words[wordIndex].toLowerCase())) {
+      alert("Invalid word");
+    } else {
+      handleCheckLetters();
+      setWordIndex((wordIndex) => wordIndex + 1);
     }
-  }
+  };
 
-  const handleBackspace = async () => {
-    if(wordsAttempts[currentIndexWordAttempt.current].length > 0){
-      wordsAttempts[currentIndexWordAttempt.current] = wordsAttempts[currentIndexWordAttempt.current].slice(0, -1);
-      setwordsAttempts([...wordsAttempts]);
-    }
-  }
-
-  const handleTileLayout = (id, color) => {
-    const wordTiles = document.querySelectorAll('.wordle-tile-row')[currentIndexWordAttempt.current].children; // The tiles of the word that player wrote - wordTile[0] is the first letter, ...
-
-    setTimeout(() => {
-      wordTiles[id].classList.add('wordle-tile-flip');
-    }, 200*id);
-
-    setTimeout(() => {
-      wordTiles[id].classList.remove('wordle-tile-flip');
-      wordTiles[id].style.backgroundColor = color;
-      wordTiles[id].style.borderColor = color;
-      wordTiles[id].style.color = 'white';
-    }, (200*id)+400);
-  }
-
-  const handleLetterAnimation = async () => {
-    let tempWord = word;
-    const wordAttempt = wordsAttempts[currentIndexWordAttempt.current];  // The word that player wrote
-    const arrayCorrectGuessedLetters = [];
+  const handleNewGame = () => {
+    setWords(["", "", "", "", "", ""]);
+    setWordIndex(0);
+    setGameStatus({
+      gameOver: false,
+      gameWon: false,
+    });
+    RandomWord().then((word) => {
+      setcorrectWord(word);
+    });
     
-    for (let i = 0; i < word.length; i++) {
-      if (wordAttempt[i].toUpperCase() === word[i].toUpperCase()) {
-        tempWord = tempWord.replace(wordAttempt[i], '');
-        arrayCorrectGuessedLetters.push(i);
-      }
-    }
+    const wordTiles = document.querySelectorAll(".wordle-tile");
+    
+    wordTiles.forEach((tile) => {
+      tile.style.background = "white";
+      tile.style.border = "3px solid #D3D7DA";
+      tile.style.color = "black";
+    });
+  };
 
-    for (let i = 0; i < word.length; i++) {
-      if(arrayCorrectGuessedLetters.includes(i)){
-        handleTileLayout(i, '#68AC61');
-      } else if(tempWord.toUpperCase().includes(wordAttempt[i].toUpperCase())){ 
-        tempWord = tempWord.replace(wordAttempt[i], '');
-        handleTileLayout(i, '#CBB550')
-      } else {
-        handleTileLayout(i, '#5E5E5E');
-      }
-    }
-  }
+  useEffect(() => {
+    RandomWord().then((word) => {
+      setcorrectWord(word);
+    });
+  }, []);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [])
+    }
+  });
 
   return (
     <>
+    {gameStatus.gameWon
+    ? <WonGameDialog 
+        isDialogOpen={gameStatus.gameOver}
+        handleNewGame={handleNewGame}
+      /> 
+    :
+      <LostGameDialog 
+        isDialogOpen={gameStatus.gameOver} 
+        correctWord={correctWord}
+        handleNewGame={handleNewGame}
+      />
+    }
       <div className="wordle-container">
         <section id="header" className="wordle-header">
             <h1>Wordle</h1>
         </section>
 
         <section id="game" className="wordle-game-board">
-          <Board wordsAttempts={wordsAttempts}/>
+          <Board words={words}/>
         </section>
 
         <section id="keyboard" className="wordle-keyboard">
-          <Keyboard />
+          <Keyboard handleKeyDown={handleKeyDown}/>
         </section>
       </div>
     </>

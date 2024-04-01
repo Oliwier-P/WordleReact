@@ -1,7 +1,11 @@
-export function Key({ letter }) {
+export function Key({ letter, handleKeyDown }) {
   return (
     <>
-        <button className={`wordle-button${letter == "ENTER" | letter == "BACKSPACE" ? "-special" : ""}`}>
+        <button 
+          id={`key-${letter}`}
+          className={`wordle-button${letter == "ENTER" | letter == "BACKSPACE" ? "-special" : ""}`}
+          onClick={() => handleKeyDown({ key: letter })}
+        >
           <b>{letter}</b>
         </button>
     </>
