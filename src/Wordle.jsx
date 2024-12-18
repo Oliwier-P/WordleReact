@@ -1,14 +1,16 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 
-import { RandomWord } from './RandomWord.js';
-import wordsArray from './words.json';
+import { RandomWord } from "./RandomWord.js";
+import wordsArray from "./words.json";
 
-import { Board } from './components/Board.jsx'
-import { Keyboard } from './components/Keyboard.jsx'
-import { LostGameDialog } from './components/LostGameDialog.jsx'
-import { WonGameDialog } from './components/WonGameDialog.jsx';
+import { Board } from "./components/Board.jsx";
+import { Keyboard } from "./components/Keyboard.jsx";
+import { LostGameDialog } from "./components/LostGameDialog.jsx";
+import { WonGameDialog } from "./components/WonGameDialog.jsx";
 
 import "./style.scss";
+import { Header } from "./components/Header.jsx";
+import { AlertBox } from "./components/AlertBox.jsx";
 
 const word = RandomWord();
 
@@ -16,6 +18,7 @@ export function Wordle() {
   const [wordIndex, setWordIndex] = useState(0);
   const [correctWord, setcorrectWord] = useState("");
   const [words, setWords] = useState(["", "", "", "", "", ""]);
+  const [errorMessage, setErrorMessage] = useState("");
   const [gameStatus, setGameStatus] = useState({
     gameOver: false,
     gameWon: false,
@@ -29,7 +32,6 @@ export function Wordle() {
       wordTiles[index].style.border = color;
       wordTiles[index].style.color = "white";
     });
-
   };
 
   const handleKeyboardAnimation = (letter, status) => {
@@ -38,17 +40,20 @@ export function Wordle() {
 
     // computedStyle returns rgb(104, 172, 97) instead of #68AC61 (because HEX was empty)
 
-    if(status === "correct" || computedStyles === "rgb(104, 172, 97)"){
+    if (status === "correct" || computedStyles === "rgb(104, 172, 97)") {
       button.style.background = "#68AC61";
       button.style.color = "white";
-    } else if(status === "missed" && button.style.background !== "rgb(104, 172, 97)"){
+    } else if (status === "missed" && button.style.background !== "rgb(104, 172, 97)") {
       button.style.background = "#CBB550";
       button.style.color = "white";
-    } else if(status === "incorrect" && button.style.background !== "rgb(104, 172, 97)" && button.style.background !== "rgb(203, 181, 80)"){
+    } else if (
+      status === "incorrect" &&
+      button.style.background !== "rgb(104, 172, 97)" &&
+      button.style.background !== "rgb(203, 181, 80)"
+    ) {
       button.style.background = "#5E5E5E";
       button.style.color = "white";
     }
-
   };
 
   const handleCheckLetters = () => {
@@ -60,7 +65,7 @@ export function Wordle() {
       if (letter === correctWord[index]) {
         tempCorrectWord = tempCorrectWord.replace(letter, "");
         tempWord = tempWord.replace(letter, "");
-        
+
         wordColorsArray.push("#68AC61");
 
         handleKeyboardAnimation(letter, "correct");
@@ -81,13 +86,12 @@ export function Wordle() {
         handleKeyboardAnimation(letter, "incorrect");
       }
     });
-    
-    handleLetterAnimation(wordColorsArray);
 
+    handleLetterAnimation(wordColorsArray);
   };
 
   const handleLetter = (letter) => {
-    if(words[wordIndex].length < 5){
+    if (words[wordIndex].length < 5) {
       setWords((words) => {
         const newWords = [...words];
         newWords[wordIndex] += letter.toLowerCase();
@@ -98,7 +102,7 @@ export function Wordle() {
 
   const handleEnter = () => {
     if (words[wordIndex].length < 5) {
-      alert("Word must be 5 characters long");
+      setErrorMessage(() => "Too short");
     } else {
       handleCheckWord();
     }
@@ -120,16 +124,16 @@ export function Wordle() {
     if (/^[a-zA-Z]$/.test(key)) {
       handleLetter(key);
     }
-    if(key === "Enter"){
+    if (key === "Enter") {
       handleEnter();
-    } 
-    if(key === "Backspace"){
+    }
+    if (key === "Delete" || key === "Backspace") {
       handleBackspace();
     }
   };
 
   const handleCheckWord = () => {
-    if(wordIndex >= 5){
+    if (wordIndex >= 5) {
       handleCheckLetters();
       setTimeout(() => {
         setGameStatus({
@@ -146,7 +150,7 @@ export function Wordle() {
         });
       }, 1000);
     } else if (!wordsArray.includes(words[wordIndex].toLowerCase())) {
-      alert("Invalid word");
+      setErrorMessage(() => "Word not found");
     } else {
       handleCheckLetters();
       setWordIndex((wordIndex) => wordIndex + 1);
@@ -163,13 +167,20 @@ export function Wordle() {
     RandomWord().then((word) => {
       setcorrectWord(word);
     });
-    
+
     const wordTiles = document.querySelectorAll(".wordle-tile");
-    
+
     wordTiles.forEach((tile) => {
       tile.style.background = "white";
       tile.style.border = "3px solid #D3D7DA";
       tile.style.color = "black";
+    });
+
+    const keyboardTiles = document.querySelectorAll('[id^="key-"]');
+
+    keyboardTiles.forEach((letter) => {
+      letter.style.backgroundColor = "#d3d7da";
+      letter.style.color = "black";
     });
   };
 
@@ -180,40 +191,49 @@ export function Wordle() {
   }, []);
 
   useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    }
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   });
+
+  useEffect(() => {
+    if (errorMessage === "") return;
+
+    const alert_box = document.getElementById("alert_box");
+    alert_box.style.display = "block";
+
+    setTimeout(() => {
+      alert_box.style.display = "none";
+      setErrorMessage("");
+    }, 1500);
+  }, [errorMessage]);
 
   return (
     <>
-    {gameStatus.gameWon
-    ? <WonGameDialog 
-        isDialogOpen={gameStatus.gameOver}
-        handleNewGame={handleNewGame}
-      /> 
-    :
-      <LostGameDialog 
-        isDialogOpen={gameStatus.gameOver} 
-        correctWord={correctWord}
-        handleNewGame={handleNewGame}
-      />
-    }
+      {gameStatus.gameWon ? (
+        <WonGameDialog isDialogOpen={gameStatus.gameOver} handleNewGame={handleNewGame} />
+      ) : (
+        <LostGameDialog
+          isDialogOpen={gameStatus.gameOver}
+          correctWord={correctWord}
+          handleNewGame={handleNewGame}
+        />
+      )}
       <div className="wordle-container">
-        <section id="header" className="wordle-header">
-            <h1>Wordle</h1>
-        </section>
+        <Header />
+
+        <AlertBox errorMessage={errorMessage} />
 
         <section id="game" className="wordle-game-board">
-          <Board words={words}/>
+          <Board words={words} />
         </section>
 
         <section id="keyboard" className="wordle-keyboard">
-          <Keyboard handleKeyDown={handleKeyDown}/>
+          <Keyboard handleKeyDown={handleKeyDown} />
         </section>
       </div>
     </>
-  )
+  );
 }

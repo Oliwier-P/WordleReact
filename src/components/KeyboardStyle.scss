@@ -1,0 +1,27 @@
+.wordle-keyboard-row {
+  width: 100%;
+  height: 50px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  &-first {
+    @extend .wordle-keyboard-row;
+    .wordle-button {
+      width: 9%;
+    }
+  }
+  &-second {
+    @extend .wordle-keyboard-row;
+    width: 90%;
+    .wordle-button {
+      width: 10%;
+    }
+  }
+  &-third {
+    @extend .wordle-keyboard-row;
+    .wordle-button {
+      width: 8%;
+    }
+  }
+}

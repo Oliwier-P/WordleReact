@@ -1,0 +1,24 @@
+.wordle-button {
+  min-width: min-content;
+  height: 45px;
+
+  background-color: #d3d7da;
+  font-size: 1.2em;
+  text-transform: uppercase;
+}
+
+.wordle-button:hover {
+  background-color: #e4e7e9;
+}
+
+.wordle-button:active {
+  transform: scale(0.9);
+}
+
+.wordle-button-special {
+  width: 14%;
+  min-width: min-content;
+  height: 45px;
+  background-color: #d3d7da;
+  font-size: 1em;
+}

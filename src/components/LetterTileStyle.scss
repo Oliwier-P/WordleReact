@@ -1,0 +1,16 @@
+.wordle-tile {
+  width: 19%;
+  height: 100%;
+
+  box-sizing: border-box;
+  border: 3px solid #d3d7da;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 1.5em;
+  font-weight: bold;
+  text-transform: uppercase;
+  transition: all 0.4s;
+}

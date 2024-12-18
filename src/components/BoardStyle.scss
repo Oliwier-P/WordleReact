@@ -1,0 +1,10 @@
+.wordle-tile-row {
+  width: 100%;
+  height: 15%;
+
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+
+  margin: auto;
+}

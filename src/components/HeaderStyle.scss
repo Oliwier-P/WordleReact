@@ -1,0 +1,17 @@
+.wordle-header {
+  width: 100vw;
+  height: 50px;
+
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: center;
+
+  box-sizing: border-box;
+  border-bottom: 3px solid black;
+
+  h1: {
+    margin: 0;
+    padding: 0;
+  }
+}
