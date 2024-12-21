@@ -2,14 +2,54 @@ body {
   margin: 0 auto;
 }
 
-$light-primary-color: #d3d7da;
-$light-secondary-color: #f6f6f6;
-$light-accent-color: #5e5e5e;
+.main-container {
+  background-color: var(--background-color);
+}
 
-$guessed-color: #68ac61;
-$almost-guessed-color: #cbb550;
-$contrast-guessed-color: #3f94e9;
-$contrast-almost-guessed-color: #f17e2d;
+:root {
+  --background-color: #ffffff;
+  --primary-color: #d3d7da;
+  --accent-color: #818384;
+
+  --base-font-color: #000000;
+  --guessed-font-color: #ffffff;
+
+  --guessed-color: #68ac61;
+  --almost-guessed-color: #cbb550;
+  --incorrect: #5e5e5e;
+
+  --dialog-background: #ffffff;
+
+  --icons-background: #d3d7da;
+  --icons-color: #3a3a3c;
+
+  --tutorial-background: #d9d9d9;
+  --tutorial-tile: #5e5e5e;
+  --tutorial-description: #a4a4a4;
+}
+
+.darkmode {
+  --background-color: #121213;
+  --primary-color: #3a3a3c;
+  --accent-color: #818384;
+
+  --base-font-color: #ffffff;
+  --guessed-font-color: #ffffff;
+
+  --dialog-background: #242424;
+
+  --icons-background: #3a3a3c;
+  --icons-color: #ffffff;
+
+  --tutorial-background: #242424;
+  --tutorial-tile: #5e5e5e;
+  --tutorial-description: #a4a4a4;
+}
+
+.contrast {
+  --guessed-color: #3f94e9;
+  --almost-guessed-color: #f17e2d;
+}
 
 .wordle-container {
   height: 100vh;
@@ -21,31 +61,6 @@ $contrast-almost-guessed-color: #f17e2d;
 
   overflow-x: auto;
   font-family: Arial, Helvetica, sans-serif;
-
-  .wordle-game-board {
-    width: 100%;
-    max-width: 300px;
-    min-height: 390px;
-
-    margin-top: auto;
-    margin-bottom: auto;
-
-    display: flex;
-    flex-direction: column;
-    transition: all 1s ease-in-out;
-  }
-
-  .wordle-keyboard {
-    width: 550px;
-    max-width: 100%;
-    height: 150px;
-
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    align-content: space-around;
-    margin-bottom: auto;
-  }
 }
 
 button {

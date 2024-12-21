@@ -1,0 +1,28 @@
+.option-container {
+  width: 60%;
+  height: 70px;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+
+  border-bottom: 5px solid var(--tutorial-description);
+
+  margin: 10px;
+  padding: 10px;
+
+  input {
+    position: absolute;
+    right: 10px;
+  }
+}
+
+.option-title {
+  font-size: 150%;
+  font-weight: bold;
+}
+
+.option-description {
+  color: var(--tutorial-description);
+}

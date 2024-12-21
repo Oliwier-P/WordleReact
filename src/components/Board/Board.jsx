@@ -1,5 +1,5 @@
 import "./BoardStyle.scss";
-import { LetterTile } from "./LetterTile";
+import { LetterTile } from "../LetterTile/LetterTile.jsx";
 
 const WordsColumns = [1, 2, 3, 4, 5];
 const WordsRows = [1, 2, 3, 4, 5, 6];

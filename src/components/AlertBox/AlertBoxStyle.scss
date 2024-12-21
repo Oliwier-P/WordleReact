@@ -1,7 +1,10 @@
 .worlde-alert {
   position: absolute;
-  top: 80px;
-  background-color: #d3d7da;
+  top: 90px;
+
+  background-color: var(--primary-color);
+  color: var(--base-font-color);
+
   display: none;
   padding: 10px;
   font-weight: bold;

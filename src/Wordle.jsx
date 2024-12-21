@@ -1,28 +1,42 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+
+import "./style.scss";
 
 import { RandomWord } from "./RandomWord.js";
 import wordsArray from "./words.json";
 
-import { Board } from "./components/Board.jsx";
-import { Keyboard } from "./components/Keyboard.jsx";
-import { LostGameDialog } from "./components/LostGameDialog.jsx";
-import { WonGameDialog } from "./components/WonGameDialog.jsx";
+import { Header } from "./components/Header/Header.jsx";
+import { LostGameDialog } from "./components/Dialog/LostGameDialog.jsx";
+import { WonGameDialog } from "./components/Dialog/WonGameDialog.jsx";
 
-import "./style.scss";
-import { Header } from "./components/Header.jsx";
-import { AlertBox } from "./components/AlertBox.jsx";
-
-const word = RandomWord();
+import { Game } from "./components/Game/Game.jsx";
+import { Tutorial } from "./components/Tutorial/Tutorial.jsx";
+import { Settings } from "./components/Settings/Settings.jsx";
 
 export function Wordle() {
   const [wordIndex, setWordIndex] = useState(0);
   const [correctWord, setcorrectWord] = useState("");
   const [words, setWords] = useState(["", "", "", "", "", ""]);
+
   const [errorMessage, setErrorMessage] = useState("");
   const [gameStatus, setGameStatus] = useState({
     gameOver: false,
     gameWon: false,
+    window: "game",
   });
+
+  const [darkmode, setDarkmode] = useState(
+    localStorage.getItem("darkmode") === "active" ? true : false
+  );
+  const [contrast, setContrast] = useState(
+    localStorage.getItem("contrast") === "active" ? true : false
+  );
+
+  const colors = {
+    primary: "var(--primary-color)",
+    color: "var(--base-font-color)",
+    tile_background: "none",
+  };
 
   const handleLetterAnimation = (wordColorsArray) => {
     const wordTiles = document.querySelectorAll(".wordle-tile-row")[wordIndex].children;
@@ -36,23 +50,19 @@ export function Wordle() {
 
   const handleKeyboardAnimation = (letter, status) => {
     const button = document.getElementById(`key-${letter}`);
-    const computedStyles = window.getComputedStyle(button);
 
-    // computedStyle returns rgb(104, 172, 97) instead of #68AC61 (because HEX was empty)
+    button.style.color = "var(--guessed-font-color)";
 
-    if (status === "correct" || computedStyles === "rgb(104, 172, 97)") {
-      button.style.background = "#68AC61";
-      button.style.color = "white";
-    } else if (status === "missed" && button.style.background !== "rgb(104, 172, 97)") {
-      button.style.background = "#CBB550";
-      button.style.color = "white";
-    } else if (
-      status === "incorrect" &&
-      button.style.background !== "rgb(104, 172, 97)" &&
-      button.style.background !== "rgb(203, 181, 80)"
-    ) {
-      button.style.background = "#5E5E5E";
-      button.style.color = "white";
+    switch (status) {
+      case "correct":
+        button.style.background = "var(--guessed-color)";
+        break;
+      case "missed":
+        button.style.background = "var(--almost-guessed-color)";
+        break;
+      case "incorrect":
+        button.style.background = "var(--incorrect)";
+        break;
     }
   };
 
@@ -66,7 +76,7 @@ export function Wordle() {
         tempCorrectWord = tempCorrectWord.replace(letter, "");
         tempWord = tempWord.replace(letter, "");
 
-        wordColorsArray.push("#68AC61");
+        wordColorsArray.push("var(--guessed-color)");
 
         handleKeyboardAnimation(letter, "correct");
       } else {
@@ -78,11 +88,11 @@ export function Wordle() {
       if (tempCorrectWord.includes(letter)) {
         tempCorrectWord = tempCorrectWord.replace(letter, "");
         const index = wordColorsArray.findIndex((color) => color === "");
-        wordColorsArray[index] = "#CBB550";
+        wordColorsArray[index] = "var(--almost-guessed-color)";
         handleKeyboardAnimation(letter, "missed");
       } else {
         const index = wordColorsArray.findIndex((color) => color === "");
-        wordColorsArray[index] = "#5E5E5E";
+        wordColorsArray[index] = "var(--incorrect)";
         handleKeyboardAnimation(letter, "incorrect");
       }
     });
@@ -136,18 +146,20 @@ export function Wordle() {
     if (wordIndex >= 5) {
       handleCheckLetters();
       setTimeout(() => {
-        setGameStatus({
+        setGameStatus((prev) => ({
+          ...prev,
           gameOver: true,
           gameWon: false,
-        });
+        }));
       }, 1000);
     } else if (words[wordIndex].toLocaleLowerCase() === correctWord.toLowerCase()) {
       handleLetterAnimation(["#68AC61", "#68AC61", "#68AC61", "#68AC61", "#68AC61"]);
       setTimeout(() => {
-        setGameStatus({
+        setGameStatus((prev) => ({
+          ...prev,
           gameOver: true,
           gameWon: true,
-        });
+        }));
       }, 1000);
     } else if (!wordsArray.includes(words[wordIndex].toLowerCase())) {
       setErrorMessage(() => "Word not found");
@@ -160,10 +172,11 @@ export function Wordle() {
   const handleNewGame = () => {
     setWords(["", "", "", "", "", ""]);
     setWordIndex(0);
-    setGameStatus({
+    setGameStatus((prev) => ({
+      ...prev,
       gameOver: false,
       gameWon: false,
-    });
+    }));
     RandomWord().then((word) => {
       setcorrectWord(word);
     });
@@ -171,17 +184,65 @@ export function Wordle() {
     const wordTiles = document.querySelectorAll(".wordle-tile");
 
     wordTiles.forEach((tile) => {
-      tile.style.background = "white";
-      tile.style.border = "3px solid #D3D7DA";
-      tile.style.color = "black";
+      tile.style.background = colors.tile_background;
+      tile.style.border = `3px solid ${colors.primary}`;
+      tile.style.color = colors.color;
     });
 
     const keyboardTiles = document.querySelectorAll('[id^="key-"]');
 
     keyboardTiles.forEach((letter) => {
-      letter.style.backgroundColor = "#d3d7da";
-      letter.style.color = "black";
+      letter.style.backgroundColor = colors.primary;
+      letter.style.color = colors.color;
     });
+  };
+
+  const handleDarkmode = () => {
+    if (!darkmode) {
+      // enable darkmode
+      localStorage.setItem("darkmode", "active");
+      setDarkmode(() => true);
+    } else {
+      // disable darkmode
+      localStorage.setItem("darkmode", "");
+      setDarkmode(() => false);
+    }
+  };
+
+  const handleContrastMode = () => {
+    if (!contrast) {
+      // enable contrast mode
+      localStorage.setItem("contrast", "active");
+      setContrast(() => true);
+    } else {
+      // disable contrast mode
+      localStorage.setItem("contrast", "");
+      setContrast(() => false);
+    }
+  };
+
+  const handleExit = (status) => {
+    switch (status) {
+      case "tutorial":
+        if (gameStatus.window == "tutorial") {
+          setGameStatus((prev) => ({ ...prev, window: "game" }));
+          return;
+        }
+        setGameStatus((prev) => ({ ...prev, window: "tutorial" }));
+        break;
+      case "settings":
+        if (gameStatus.window == "settings") {
+          setGameStatus((prev) => ({ ...prev, window: "game" }));
+          return;
+        }
+        setGameStatus((prev) => ({ ...prev, window: "settings" }));
+        break;
+      case "game":
+        setGameStatus((prev) => ({ ...prev, window: "game" }));
+        break;
+      default:
+        break;
+    }
   };
 
   useEffect(() => {
@@ -210,29 +271,50 @@ export function Wordle() {
     }, 1500);
   }, [errorMessage]);
 
+  useEffect(() => {
+    console.log(correctWord);
+  }, [correctWord]);
+
   return (
     <>
-      {gameStatus.gameWon ? (
-        <WonGameDialog isDialogOpen={gameStatus.gameOver} handleNewGame={handleNewGame} />
-      ) : (
-        <LostGameDialog
-          isDialogOpen={gameStatus.gameOver}
-          correctWord={correctWord}
-          handleNewGame={handleNewGame}
-        />
-      )}
-      <div className="wordle-container">
-        <Header />
+      <div
+        className={`
+          ${darkmode ? "darkmode" : ""} 
+          ${contrast ? "contrast" : ""} 
+          main-container`}
+      >
+        {gameStatus.gameWon ? (
+          <WonGameDialog
+            isDialogOpen={gameStatus.gameOver}
+            handleNewGame={handleNewGame}
+          />
+        ) : (
+          <LostGameDialog
+            isDialogOpen={gameStatus.gameOver}
+            correctWord={correctWord}
+            handleNewGame={handleNewGame}
+          />
+        )}
 
-        <AlertBox errorMessage={errorMessage} />
+        <div className="wordle-container">
+          <Header darkmode={darkmode} handleExit={handleExit} />
 
-        <section id="game" className="wordle-game-board">
-          <Board words={words} />
-        </section>
+          <Tutorial handleExit={handleExit} display={gameStatus.window} />
 
-        <section id="keyboard" className="wordle-keyboard">
-          <Keyboard handleKeyDown={handleKeyDown} />
-        </section>
+          <Settings
+            handleExit={handleExit}
+            handleDarkmode={handleDarkmode}
+            handleContrastMode={handleContrastMode}
+            display={gameStatus.window}
+          />
+
+          <Game
+            words={words}
+            errorMessage={errorMessage}
+            handleKeyDown={handleKeyDown}
+            display={gameStatus.window}
+          />
+        </div>
       </div>
     </>
   );

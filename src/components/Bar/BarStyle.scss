@@ -1,0 +1,28 @@
+.bar {
+  position: relative;
+  width: 100%;
+  height: 50px;
+
+  background-color: var(--primary-color);
+  color: var(--base-font-color);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border-radius: 10px;
+
+  font-size: 170%;
+
+  .exit {
+    position: absolute;
+    right: 10px;
+
+    background-color: var(--primary-color);
+    color: var(--base-font-color);
+
+    border: none;
+
+    font-size: 80%;
+  }
+}

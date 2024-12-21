@@ -1,5 +1,5 @@
 import "./KeyboardStyle.scss";
-import { Key } from "./Key.jsx";
+import { Key } from "../Key/Key.jsx";
 
 const FirstRowLetters = ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"];
 const SecondRowLetters = ["a", "s", "d", "f", "g", "h", "j", "k", "l"];

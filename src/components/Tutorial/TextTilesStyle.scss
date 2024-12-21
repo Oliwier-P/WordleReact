@@ -1,0 +1,63 @@
+.word-colors-description {
+  width: 70%;
+  height: 230px;
+
+  background-color: var(--tutorial-background);
+  color: var(--base-font-color);
+
+  margin-top: 40px;
+
+  border-radius: 10px;
+
+  @media only screen and (max-width: 1400px) {
+    width: 85%;
+  }
+
+  @media only screen and (max-width: 800px) {
+    width: 90%;
+  }
+}
+
+.row-description {
+  display: flex;
+  flex-wrap: wrap;
+
+  margin: 20px 0 0 10px;
+}
+
+.small-tile {
+  width: 40px;
+  height: 40px;
+
+  background-color: var(--tutorial-tile);
+  color: var(--guessed-font-color);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  margin: 5px;
+
+  border-radius: 7px;
+
+  font-size: 120%;
+}
+
+.miss {
+  background-color: var(--almost-guessed-color);
+}
+
+.correct {
+  background-color: var(--guessed-color);
+}
+
+.coma {
+  align-self: end;
+  font-size: 150%;
+}
+
+.text-description {
+  display: flex;
+  align-items: center;
+  margin-left: 5px;
+}
