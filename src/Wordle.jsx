@@ -58,7 +58,8 @@ export function Wordle() {
         button.style.background = "var(--guessed-color)";
         break;
       case "missed":
-        button.style.background = "var(--almost-guessed-color)";
+        if (button.style.background !== "var(--guessed-color)")
+          button.style.background = "var(--almost-guessed-color)";
         break;
       case "incorrect":
         button.style.background = "var(--incorrect)";
