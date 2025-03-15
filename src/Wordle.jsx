@@ -25,12 +25,8 @@ export function Wordle() {
     window: "game",
   });
 
-  const [darkmode, setDarkmode] = useState(
-    localStorage.getItem("darkmode") === "active" ? true : false
-  );
-  const [contrast, setContrast] = useState(
-    localStorage.getItem("contrast") === "active" ? true : false
-  );
+  const [darkmode, setDarkmode] = useState(localStorage.getItem("darkmode") === "active" ? true : false);
+  const [contrast, setContrast] = useState(localStorage.getItem("contrast") === "active" ? true : false);
 
   const colors = {
     primary: "var(--primary-color)",
@@ -58,8 +54,7 @@ export function Wordle() {
         button.style.background = "var(--guessed-color)";
         break;
       case "missed":
-        if (button.style.background !== "var(--guessed-color)")
-          button.style.background = "var(--almost-guessed-color)";
+        if (button.style.background !== "var(--guessed-color)") button.style.background = "var(--almost-guessed-color)";
         break;
       case "incorrect":
         button.style.background = "var(--incorrect)";
@@ -272,10 +267,6 @@ export function Wordle() {
     }, 1500);
   }, [errorMessage]);
 
-  useEffect(() => {
-    console.log(correctWord);
-  }, [correctWord]);
-
   return (
     <>
       <div
@@ -285,16 +276,9 @@ export function Wordle() {
           main-container`}
       >
         {gameStatus.gameWon ? (
-          <WonGameDialog
-            isDialogOpen={gameStatus.gameOver}
-            handleNewGame={handleNewGame}
-          />
+          <WonGameDialog isDialogOpen={gameStatus.gameOver} handleNewGame={handleNewGame} />
         ) : (
-          <LostGameDialog
-            isDialogOpen={gameStatus.gameOver}
-            correctWord={correctWord}
-            handleNewGame={handleNewGame}
-          />
+          <LostGameDialog isDialogOpen={gameStatus.gameOver} correctWord={correctWord} handleNewGame={handleNewGame} />
         )}
 
         <div className="wordle-container">
@@ -302,19 +286,9 @@ export function Wordle() {
 
           <Tutorial handleExit={handleExit} display={gameStatus.window} />
 
-          <Settings
-            handleExit={handleExit}
-            handleDarkmode={handleDarkmode}
-            handleContrastMode={handleContrastMode}
-            display={gameStatus.window}
-          />
+          <Settings handleExit={handleExit} handleDarkmode={handleDarkmode} handleContrastMode={handleContrastMode} display={gameStatus.window} />
 
-          <Game
-            words={words}
-            errorMessage={errorMessage}
-            handleKeyDown={handleKeyDown}
-            display={gameStatus.window}
-          />
+          <Game words={words} errorMessage={errorMessage} handleKeyDown={handleKeyDown} display={gameStatus.window} />
         </div>
       </div>
     </>
